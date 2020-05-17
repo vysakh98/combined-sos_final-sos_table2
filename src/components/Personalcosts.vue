@@ -412,7 +412,8 @@ watch:{
   let Totalsum=0
   let Year1sum=0
   if(this.items.length==this.$store.getters.Pesonalcost.length){
-
+  
+   this.count=this.items.length-1
    this.Totalsum=0
    this.year1sum=0
    this.$emit('personalcost',{subtotal:this.Totalsum,year1sum:this.year1sum})
