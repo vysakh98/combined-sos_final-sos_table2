@@ -116,7 +116,7 @@ export default{
   ProjectBudjetId:0,
   PersonalCostId:-1,
 	submitStatus:'',
-	count:-1,
+	count:-1, /* sets editability to newly pushed objects */
 	editindex:null,
 	editable:false,
 	Total_No_of_Units:'',
@@ -153,6 +153,9 @@ export default{
 	}
 },
 methods:{
+
+/* add method pushes an empty object to the items array */
+
 add(){
   this.ProjectBudjetId=parseInt(this.ProjectCode)
 
@@ -213,12 +216,17 @@ add(){
 
 },
 
+/* edit function enable edit functionality to the select object */
+
 edit(item){
   let editindex = this.items.indexOf(item)
   this.editindex=editindex
   this.submitStatus='edit'
   this.editable=true
 	},
+
+/* delete function deltes the selected object */
+
 deleteitem(item){
    this.count=this.count-1
    this.PersonalCostId=this.PersonalCostId-1
@@ -237,6 +245,9 @@ deleteitem(item){
    console.log(result)
    })
 },
+
+/* depending on the submit status which is set by either the edit function or add function the save function will either post an item to the items array or edit an existing item in the array , with help of axios the changes will be reflected in the database also */
+
 save(e,item,totalcost,year1cost){
   console.log(totalcost)
   console.log(year1cost)
@@ -407,12 +418,15 @@ this.$axios({
   }
 }
 },
+
+/* since the items array is recived as props from parrent component the watch object watches the changes happening in items array */
+
 watch:{
   items(){
   let Totalsum=0
   let Year1sum=0
   if(this.items.length==this.$store.getters.Pesonalcost.length){
-  
+
    this.count=this.items.length-1
    this.Totalsum=0
    this.year1sum=0

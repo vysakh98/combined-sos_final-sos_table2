@@ -305,7 +305,7 @@ border-bottom:1px solid blue;
 }
 #add1{
 position:absolute;
-left:85%;
+left:90%;
 margin-top:5px;
 }
 .elevation-1{

@@ -39,7 +39,7 @@ class="elevation-1"
 </tr>
 </template>
 <template #body.append="{headers}">
-<tr v-show="Personalcostshow" :colspan="headers.length">
+<tr v-show="Personalcostshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <Personalcosts v-on:personalcost="personalcost($event)" :items="PC" :ProjectCode="PCProjectCode"></Personalcosts>
  </td>
@@ -54,7 +54,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="Subcontractingshow" :colspan="headers.length">
+<tr v-show="Subcontractingshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <subContracting v-on:subcontracting="subcontracting($event)" :items="SC" :ProjectCode="PCProjectCode"></subContracting>
  </td>
@@ -70,7 +70,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="Localofficeshow" :colspan="headers.length">
+<tr v-show="Localofficeshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <Localoffice v-on:localofficecost="localofficecost($event)" :items="LOC" :ProjectCode="PCProjectCode"></Localoffice>
  </td>
@@ -85,7 +85,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="projectSuppliesshow" :colspan="headers.length">
+<tr v-show="projectSuppliesshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <projectSupplies v-on:projectsupplies="supplies($event)" :items="PS" :ProjectCode="PCProjectCode"></projectSupplies>
  </td>
@@ -100,7 +100,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="projectequipmentMaintenenseshow" :colspan="headers.length">
+<tr v-show="projectequipmentMaintenenseshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <projectequipmentMaintenense v-on:projectequipment="maintanenece($event)" :items="PEM" :ProjectCode="PCProjectCode"></projectequipmentMaintenense>
  </td>
@@ -116,7 +116,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="Travleshow" :colspan="headers.length">
+<tr v-show="Travleshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <Travel v-on:Travel="travel($event)" :items="T" :ProjectCode="PCProjectCode"></Travel>
  </td>
@@ -131,7 +131,7 @@ class="elevation-1"
    </div>
  </td>
 </tr>
-<tr v-show="Meeting_and_workshopsshow" :colspan="headers.length">
+<tr v-show="Meeting_and_workshopsshow && selected" :colspan="headers.length">
  <td :colspan="headers.length" id="table-td">
    <meetingandworkShops v-on:workshopscost="workshopscost($event)" :items="MAW" :ProjectCode="PCProjectCode"></meetingandworkShops>
  </td>
@@ -290,6 +290,7 @@ export default{
   projectequipmentMaintenensesSpan:true,
   errmsg:'',
   PCProjectCode:null,
+  selected:false,
    
   Projects:[],
   Pcodes:[],
@@ -300,6 +301,8 @@ export default{
   T:[],
   MAW:[],
   LOC:[],
+
+ /* from validation rules checks weather  Projectname , ProjectCode or LeadOrganization were already registerd */
 
   Rules:{
   ProjectNamerule:[()=> !this.Pnamerule(this.ProjectName) || 'Project name already registerd ' ],
@@ -331,6 +334,9 @@ export default{
   'meetingandworkShops':meetingandworkShops
   },
   methods:{
+
+  /* methods to assingn values form other components recived through custom events to variable decleared in this component */ 
+
   personalcost(e){
   console.log(e)
   this.personalcostTotal=e.subtotal
@@ -360,9 +366,13 @@ export default{
    this.travelcost=e.subtotal
    this.yaer1travelcost=e.year1sum
   },
+
+  /* submit function for form which  registers a new Project */
+
   submit(){
   if(this.$refs.form1.validate()){
   console.log('sucess')
+  this.selected=true
   let url=`http://localhost:3000/PB/data/post/${this.ProjectCode}/${this.ProjectName}/${this.LeadOrganization}`
   axios.post(url).then(results=>{
   console.log(results)
@@ -386,11 +396,15 @@ export default{
   console.log('failed')
   }
   },
+
+  /* submit function for the form which selects already registerd project */
+
   submit2(){
 
   if(this.$refs.form2.validate()){
   console.log('sucess')
   this.PCProjectCode=this.ProjectCode2
+  this.selected=true
 
   this.$store.dispatch('getData',parseInt(this.ProjectCode2)).then(()=>{
   this.PC=[]
@@ -478,6 +492,9 @@ export default{
   this.LeadOrganization2=Pname2[0].LeadOrganization
   }
   },
+
+/* computed properties which depends on the values from other componenets and changes value if any one of the dependent value changes */
+
 computed:{
  subtotalEligibleCost(){
   return this.personalcostTotal+this.localofficeTotal+this.workshopscostTotal+this.travelcost+this.contractingcost+this.suppliescost+this.maintanenececost
@@ -501,6 +518,9 @@ computed:{
  return this.$store.getters.SOS
  }
 },
+
+/* The created hook which runs when this component is created.This function is pushing the registerd project details form the database to Projectcodes and Projectnames array so that the user can select the desierd project */
+
 created(){
   axios.get('http://localhost:3000/PB/data').then(results=>{
    for(let i=0; i<results.data.result.length ;i++){
