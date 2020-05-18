@@ -323,4 +323,34 @@ left:60%;
 .td{
   width:150px;
 }
+@media only screen and (min-width: 1024px) {
+#add1{
+position:absolute;
+left:85%;
+margin-top:5px;
+}
+  
+}
+@media only screen and (min-width: 1299px) {
+#add1{
+position:absolute;
+left:89%;
+margin-top:5px;
+}
+  
+}
+@media only screen and (min-width: 1440px) {
+#add1{
+position:absolute;
+left:85%;
+margin-top:5px;
+}
+}
+@media only screen and (min-width: 2560px) {
+#add1{
+position:absolute;
+left:81%;
+margin-top:5px;
+}
+}
 </style>
